@@ -43,6 +43,7 @@ const createTransactionsTable = async () => {
             groupID INT,
             paidBy INT,
             amount FLOAT NOT NULL,
+            name VARCHAR(255),
             FOREIGN KEY (groupID) REFERENCES Groups(GroupID),
             FOREIGN KEY (paidBy) REFERENCES Users(UserID)
         );

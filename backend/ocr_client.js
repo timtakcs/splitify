@@ -40,7 +40,9 @@ const ocrClient = {
                         });
 
                         if (getResponse.status === 200 && getResponse.data.status === 'succeeded') {
-                            resolve(getResponse.data.analyzeResult.documents[0].fields.Items.valueArray);
+                            const store = getResponse.data.analyzeResult.documents[0].fields.MerchantName.valueString;
+                            const items = getResponse.data.analyzeResult.documents[0].fields.Items.valueArray; 
+                            resolve({ store: store, items: items });
                         } else {
                             console.log('Data not ready for resultID:', resultID);
                             setTimeout(pollForResult, 1000); // Poll again after a delay

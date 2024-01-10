@@ -12,26 +12,26 @@
                 <h6 class="dropdown-header">Has Bought</h6>
                 <button
                     v-for="member in members.filter(
-                        (m) => paying.includes(m)
+                        (m) => paying.includes(m.name)
                     )"
                     :key="member"
                     class="dropdown-item"
-                    @click="toggleBought(member)"
+                    @click="toggleBought(member.name)"
                 >
-                    {{ member }}
+                    {{ member.name }}
                 </button>
             </section>
             <section>
                 <h6 class="dropdown-header">Hasn't Bought</h6>
                 <button
                     v-for="member in members.filter((m) =>
-                        !paying.includes(m)
+                        !paying.includes(m.name)
                     )"
                     :key="member"
                     class="dropdown-item"
-                    @click="toggleBought(member)"
+                    @click="toggleBought(member.name)"
                 >
-                    {{ member }}
+                    {{ member.name }}
                 </button>
             </section>
         </div>
@@ -52,7 +52,9 @@ export default {
         };
     },
     created() {
-        this.paying = [...this.members];
+        this.members.forEach((m) => {
+            this.paying.push(m.name);
+        });
     },  
     methods: {
         toggleDropdown() {

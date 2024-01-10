@@ -30,20 +30,30 @@
         },
         methods: {
             async submitLogin() {
-                const response = await fetch('http://localhost:3000/api/signup', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: this.email,
-                        username: this.username,
-                        password: this.password,
-                    }),
-                });
+                try {
+                    const response = await fetch('http://localhost:3000/api/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: this.email,
+                            username: this.username,
+                            password: this.password,
+                        }),
+                    });
 
-                const responseData = await response.json();
-                console.log(responseData);
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        const token = responseData.token;
+                        localStorage.setItem("userToken", token);
+                        this.$router.push({ path: "/" });
+                    } else {
+                        console.log("Signup failed with status: " + response.status);
+                    }
+                } catch (error) {
+                    console.error("Network error or JSON parsing error:", error);
+                }
             }
         }
     }

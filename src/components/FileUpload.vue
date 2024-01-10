@@ -8,7 +8,8 @@
             type="file"
             @change="handleUpload($event)"
             accept="image/*"
-            capture multiple
+            capture
+            multiple
         />
         <button class="btn" @click="submitReceipts">upload</button>
     </div>
@@ -17,49 +18,73 @@
             {{ url.name }}
         </li>
     </div>
+    <div>
+        <SelectDropdown
+            :members="props.members"
+            @member-selected="handleMember"
+        />
+    </div>
 </template>
 
-<script>
-export default {
-    name: "FileUpload",
-    methods: {
-        close() {
-            this.$emit("close-modal");
-        },
-        submitReceipts() {
-            console.log("submitting");
+<script setup>
+import { ref, defineEmits, defineProps } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
-            const form = new FormData();
+import SelectDropdown from "./SelectDropdown.vue";
 
-            for (const file of this.files) {
-                form.append('receipts', file);
-            }
+const emit = defineEmits(["update-active-group"]);
 
-            fetch('http://localhost:3000/api/receipts', {
-                method: 'POST',
-                body: form,
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data.data);
-                this.$router.push({ path: '/new-transaction', query: { data: data.data}})
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        },
-        handleUpload(event) {
-            const newFiles = event.target.files; 
-            if (newFiles.length) {
-                this.files = [...this.files, ...Array.from(newFiles)];
-            }
-        }
-    },
-    data() {
-        return {
-            files: []
-        }
+const router = useRouter();
+
+const files = ref([]);
+const paidBy = ref(null);
+
+const props = defineProps({
+    members: Array,
+    groupID: Number,
+});
+
+const close = () => {
+    emit("close-modal");
+};
+
+const submitReceipts = () => {
+    const form = new FormData();
+
+    for (const file of files.value) {
+        form.append("receipts", file);
     }
+
+    axios
+        .post("http://localhost:3000/api/receipts", form)
+        .then((response) => {
+            console.log("Success:", response.data.data);
+            router.push({
+                path: "/new-transaction",
+                query: {
+                    groupID: props.groupID,
+                    resultIDs: response.data.data,
+                    paidBy: JSON.stringify(paidBy.value),
+                    members: JSON.stringify(props.members)
+                },
+            });
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+};
+
+const handleUpload = (event) => {
+    const newFiles = event.target.files;
+    if (newFiles.length) {
+        files.value = [...files.value, ...Array.from(newFiles)];
+    }
+};
+
+const handleMember = (member) => {
+    paidBy.value = member;
+    console.log("Name: " + props.groupID);
 };
 </script>
 

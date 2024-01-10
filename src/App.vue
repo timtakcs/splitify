@@ -18,10 +18,11 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+    height: auto;
   }
 
-  .no-gutters > [class^="col-"] {
+  /* .no-gutters > [class^="col-"] {
     padding-right: 0;
     padding-left: 0;
-  }
+  } */
 </style>

@@ -1,11 +1,8 @@
 <template>
-    <div
-        class="receipt-item d-flex justify-content-between align-items-center p-3 border rounded mb-2 shadow-sm"
-    >
-        <div class="item-info d-flex align-items-center">
-            <h5 class="mb-0 me-2">{{ item.name }}</h5>
-            <!-- me-2 adds margin to the right -->
-            <h5 class="mb-0">$ {{ item.price.toFixed(2) }}</h5>
+    <div class="receipt-item">
+        <div class="item-info">
+            <h5 class="item-name">{{ item.name }}</h5> <!-- Class for name -->
+            <h6 class="item-price">$ {{ item.price.toFixed(2) }}</h6> <!-- Class for price -->
         </div>
         <div class="bought-by">
             <DropdownMenu :members="members" :totals="totals" :price="item.price"/>
@@ -43,15 +40,37 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .receipt-item {
-    position: relative;
+    background-color: #f8f9fa; /* Soft background color */
+    color: #464646;
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 1em;
+    margin-bottom: 0.5em;
+    border: none; /* Remove borders */
+    box-shadow: none; /* Remove shadows */
 }
 
-.dropdown {
-    position: absolute;
-    z-index: 1000;
-    background-color: rgb(201, 201, 201);
-    border-radius: 10px;
+.item-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align texts to the left */
+}
+
+.item-name {
+    font-size: 1.1rem; /* Slightly larger font for the name */
+    margin-bottom: 0.25rem;
+    font-weight: bold; /* Bold font for the name */
+}
+
+.item-price {
+    font-size: 1rem; /* Slightly smaller font for the price */
+    font-weight: normal;
 }
 </style>
+
+
