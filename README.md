@@ -20,5 +20,6 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### To run locally using docker
+Create a local PostgreSQL server on port 5432
+In the root directory run ```docker-compose up --build``` and check localhost:8080
