@@ -21,5 +21,5 @@ npm run lint
 ```
 
 ### To run locally using docker
-Create a local PostgreSQL server on port 5432 \n
+Create a local PostgreSQL server on port 5432  
 In the root directory run ```docker-compose up --build``` and check localhost:8080
