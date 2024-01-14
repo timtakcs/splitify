@@ -1,9 +1,16 @@
 <template>
     <div class="dashboard d-flex flex-column align-items-center">
         <h1 class="text-center">Groups</h1>
-        <button class="btn btn-success mb-3" @click="addGroup">
+        <button class="btn btn-success mb-3" @click="openModal">
             <i class="fas fa-plus"></i> Add Group
         </button>
+        <Teleport to="#modal">
+            <div class="modal-bg" v-if="isModalOpen">
+                <div class="group-manager">
+                    <GroupManager @close="closeModal"/>
+                </div>
+            </div>
+        </Teleport>
         <div class="list-group">
             <a
                 href="#"
@@ -24,10 +31,12 @@ import { ref, defineEmits } from "vue";
 import { onMounted } from "vue";
 import { parseJwt } from "../helpers";
 import axios from "axios";
+import GroupManager from "./GroupManager.vue";
 
 const groups = ref([]);
 const activeGroupId = ref(null);
 const emit = defineEmits(['update-active-group']);
+const isModalOpen = ref(false);
 
 const pullGroups = async () => {
     try {
@@ -52,24 +61,15 @@ const pullGroups = async () => {
     }
 };
 
-const addGroup = async () => {
-    try {
-        console.log("function called");
-
-        const payload = parseJwt(localStorage.getItem("userToken"));
-
-        await axios.post("http://localhost:3000/api/create-group", {
-            data: {
-                userId: payload.userId,
-                groupName: "random",
-            },
-        });
-
-        pullGroups();
-    } catch (error) {
-        console.log("Error:" + error);
-    }
+const openModal = () => {
+    isModalOpen.value = true;
+    console.log(isModalOpen.value);
 };
+
+const closeModal = async () => {
+    isModalOpen.value = false;
+    await pullGroups();
+}
 
 const setActiveGroup = (group) => {
     activeGroupId.value = group.groupid;
@@ -88,7 +88,6 @@ onMounted(() => {
     width: 100%; /* Ensure dashboard takes full width */
     padding: 20px; /* Add padding for better spacing */
     background-color: #f8f9fa; /* Use a softer shade for the background */
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); Soft shadow for depth */
 }
 
 .text-center {
@@ -129,6 +128,28 @@ onMounted(() => {
 
 .fas {
     margin-right: 0.5rem; /* Space between icon and button text */
+}
+
+.modal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    background-color: rgba(0,0,0,0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.group-manager {
+    position: relative;
+
+    background: white;
+    padding: 50px 100px;
+    border-radius: 5px;
 }
 
 </style>

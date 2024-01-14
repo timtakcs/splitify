@@ -1,28 +1,31 @@
 <template>
     <div class="member-item p-3 mb-2">
-        <div class="member-name">{{ props.name }}</div>
-        <div class="member-amount" :class="{ owes: props.isOwed, owed: !props.isOwed }">
-            <span v-if="props.isOwed">Owes ${{ props.amount.toFixed(2) }}</span>
-            <span v-else>Is Owed ${{ props.amount.toFixed(2) }}</span>
+        <div class="member-name">{{ props.balance.name }}</div>
+        <div class="member-amount" :class="{ owes: props.balance.isOwed, owed: !props.balance.isOwed }">
+            <span v-if="props.balance.isOwed">owes ${{ props.balance.amount.toFixed(2) }}</span>
+            <span v-else>is owed ${{ props.balance.amount.toFixed(2) }}</span>
         </div>
     </div>
 </template>
 
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, onMounted } from "vue";
 
 const props = defineProps({
-    name: String,
-    isOwed: Boolean,
-    amount: Number
+    balance: Object,
 });
+
+onMounted(() => {
+    console.log(props.balance.isOwed, props.balance.name);
+}); 
+
 </script>
 
 <style scoped>
 .member-item {
-    background-color: #f8f9fa; /* Soft background like transactions */
+    background-color: #f8f9fa;
     color: #242424;
-    border-radius: 10px; /* Consistent with transactions */
+    border-radius: 10px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: space-between;
@@ -32,7 +35,7 @@ const props = defineProps({
 }
 
 .member-name {
-    font-size: 0.9rem; /* Adjusted to be smaller */
+    font-size: 0.9rem;
     font-weight: 600;
     color: #333;
     margin-right: 1rem; /* Add some space before the amount */

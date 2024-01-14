@@ -42,6 +42,7 @@ export default {
 
 <style scoped>
 .receipt-item {
+    position: relative;
     background-color: #f8f9fa; /* Soft background color */
     color: #464646;
     border-radius: 10px;
@@ -71,6 +72,14 @@ export default {
     font-size: 1rem; /* Slightly smaller font for the price */
     font-weight: normal;
 }
+
+.dropdown {
+    position: absolute;
+    right: 0; 
+    top: 100%; 
+    z-index: 1000;
+}
+
 </style>
 
 

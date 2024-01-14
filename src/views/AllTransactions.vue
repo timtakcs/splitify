@@ -35,11 +35,9 @@
                 <div class="balances-section">
                     <h1 class="title text-start">Balances</h1>
                 </div>
-                <li class="list-group" v-for="member in members" :key="member.name">
+                <li class="list-group" v-for="balance in balances" :key="balance.name">
                     <MemberItem
-                        :name="member.name"
-                        :isOwed="false"
-                        :amount="15.12"
+                        :balance="balance"
                     />
                 </li>
             </div>
@@ -60,6 +58,8 @@ const isModalOpen = ref(false);
 
 const transactions = ref([]);
 const members = ref([]);
+const balances = ref([]);
+// var payments = {};
 
 const openModal = () => {
     isModalOpen.value = true;
@@ -71,11 +71,11 @@ const handleGroupUpdate = async (newGroupId) => {
 
     members.value = [];
     transactions.value = [];
+    balances.value = [];
 
     await pullTransactions();
     await pullMembers();
-
-    console.log(transactions.value);
+    await pullBalances();
 }
 
 const pullMembers = async () => {
@@ -108,12 +108,34 @@ const pullTransactions = async () => {
     }
 }
 
+const pullBalances = async () => {
+    try {
+        const url = 'http://localhost:3000/api/get-balances/' + activeGroupId.value.toString();
+        const response = await axios.get(url);
+
+        const result = response.data.data;
+
+        result.balances.forEach((balance) => {
+            const isOwed = balance.balance < 0 ? true : false;
+            balances.value.push({
+                name: balance.name,
+                isOwed: isOwed,
+                amount: Math.abs(balance.balance)
+            });
+        });
+
+        // payments = result.transactions;
+    } catch (error) {   
+        console.log("Error: " + error);
+    }
+};
+
 </script>
 
 <style scoped>
 .title {
     margin: 0;
-    font-size: 24px; /* Adjust the font size if needed */
+    font-size: 24px;
 }
 
 .balances-section {

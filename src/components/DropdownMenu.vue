@@ -100,8 +100,8 @@ export default {
 .dropdown-menu {
     position: absolute;
     background-color: white;
+    right:0;
     border: 1px solid #ddd;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    width: 200px;
 }
 </style>

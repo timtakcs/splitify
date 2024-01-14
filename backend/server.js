@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const pool = require("./database/database");
 const ocrClient = require("./ocr_client");
 const app = express();
 const env = require("dotenv").config({ path: "./keys.env" });
@@ -10,6 +9,7 @@ const upload = multer({ dest: "uploads/" });
 const createAllTables = require("./database/init-db");
 const jwt = require("jsonwebtoken");
 const dbManager = require("./database/dbmanager");
+const optimizeBalances = require("./optimizeBalances");
 
 createAllTables();
 
@@ -150,7 +150,6 @@ app.get("/api/get-group-members/:groupId", async (req, res) => {
 });
 
 app.post("/api/create-transaction", async (req, res) => {
-    console.log("received transaction");
     try {
         const data = req.body.data;
 
@@ -165,6 +164,35 @@ app.post("/api/create-transaction", async (req, res) => {
             data.groupID,
             data.balances
         );
+    } catch (error) {
+        console.log("Error: " + error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+app.get("/api/get-balances/:groupId", async (req, res) => {
+    try {
+        const groupId = req.params.groupId;
+
+        const balances = await dbManager.getActiveBalances(groupId);
+        const members = await dbManager.getMembers(groupId);
+
+        const data = optimizeBalances(members, balances);
+
+        console.log(data);
+
+        res.status(200).json({ data });
+    } catch (error) {
+        console.log("Error: " + error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+app.post("/api/join-group", async (req, res) => {
+    try {
+        const data = req.body.data;
+
+        await dbManager.addToGroup(data.userId, data.groupId);
     } catch (error) {
         console.log("Error: " + error);
         res.status(500).json({ message: "Internal server error" });

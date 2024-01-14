@@ -158,7 +158,37 @@ const dbManager = {
                 throw error;
             }
         });
-    }
+    },
+
+    async getActiveBalances(groupId) {
+        try {
+            const query = `
+                SELECT BalanceID, owedBy, owedTo, amount
+                FROM Balances
+                WHERE groupID = $1 AND settled = FALSE;            
+            `;
+            const values = [groupId];
+
+            const result = await pool.query(query, values);
+            return result.rows;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async addToGroup(userId, groupId) {
+        try {
+            const query = `
+            INSERT INTO groupMembers (groupID, userId) 
+            VALUES ($1, $2);                
+            `;
+            values = [groupId, userId];
+
+            await pool.query(query, values);
+        } catch (error) {
+            throw error;
+        };
+    },
 };
 
 module.exports = dbManager;
