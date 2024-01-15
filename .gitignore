@@ -5,6 +5,8 @@ node_modules
 /backend/uploads
 /backend/keys.env
 
+Splitify-Key.pem
+
 
 # local env files
 .env.local
