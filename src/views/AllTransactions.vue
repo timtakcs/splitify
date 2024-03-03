@@ -28,6 +28,7 @@
                         :storeName="transaction.storename"
                         :paidBy="transaction.paidbyname"
                         :amount="transaction.amount"
+                        :date="transaction.transactiondate"
                     />
                 </li>
             </div>
@@ -38,6 +39,7 @@
                 <li class="list-group" v-for="balance in balances" :key="balance.name">
                     <MemberItem
                         :balance="balance"
+                        :payments="payments[balance.name] || []"
                     />
                 </li>
             </div>
@@ -59,7 +61,9 @@ const isModalOpen = ref(false);
 const transactions = ref([]);
 const members = ref([]);
 const balances = ref([]);
-// var payments = {};
+const payments = ref({});
+
+const isLoaded = ref(false);
 
 const openModal = () => {
     isModalOpen.value = true;
@@ -67,6 +71,8 @@ const openModal = () => {
 };
 
 const handleGroupUpdate = async (newGroupId) => {
+    isLoaded.value = false;
+
     activeGroupId.value = newGroupId;
 
     members.value = [];
@@ -76,6 +82,8 @@ const handleGroupUpdate = async (newGroupId) => {
     await pullTransactions();
     await pullMembers();
     await pullBalances();
+
+    isLoaded.value = true;
 }
 
 const pullMembers = async () => {
@@ -101,8 +109,11 @@ const pullTransactions = async () => {
         const result = response.data.data;
 
         result.forEach((transaction) => {
+            transaction.transactiondate = new Date(transaction.transactiondate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             transactions.value.push(transaction);
         })
+
+        console.log(transactions.value[0])
     } catch (error) {   
         console.log("Error: " + error);
     }
@@ -124,7 +135,8 @@ const pullBalances = async () => {
             });
         });
 
-        // payments = result.transactions;
+        payments.value = result.transactions;
+
     } catch (error) {   
         console.log("Error: " + error);
     }

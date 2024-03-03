@@ -1,7 +1,7 @@
 <template>
     <div class="receipt-item d-flex justify-content-between align-items-center p-3 mb-2">
         <div class="date-section me-3">
-            <span class="date-placeholder">Dec 28</span>
+            <span class="date-placeholder">{{ props.date }}</span>
         </div>
         <div class="item-info">
             <span class="store-name">{{ props.storeName }}</span>
@@ -17,6 +17,7 @@ const props = defineProps({
     storeName: String,
     paidBy: Number,
     amount: Number,
+    date: String
 });
 </script>
 

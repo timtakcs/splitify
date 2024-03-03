@@ -8,6 +8,7 @@
                 <span class="member-total">${{ totals.get(member.name).toFixed(2) }}</span>
             </li>
         </ul>
+        <p class="paid-by-info">Total: {{ props.total }}</p>
         <p class="paid-by-info">Paid by: {{ props.paidBy.name }}</p>
     </div>
 </template>
@@ -18,7 +19,8 @@ import { defineProps } from "vue";
 const props = defineProps({
     members: Array,
     totals: Map,
-    paidBy: Object
+    paidBy: Object,
+    total: Number
 });
 </script>
 

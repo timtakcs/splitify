@@ -40,6 +40,7 @@ const createTransactionsTable = async () => {
     const query = `
         CREATE TABLE IF NOT EXISTS Transactions (
             TransactionID SERIAL PRIMARY KEY,
+            date DATE NOT NULL,
             groupID INT,
             paidBy INT,
             amount FLOAT NOT NULL,

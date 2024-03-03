@@ -28,7 +28,7 @@
                 </li>
             </div>
             <div class="col-md-3 scrollable-list">
-                <GroupTotals :members="members" :totals="totals" :paidBy="paidBy" />
+                <GroupTotals :members="members" :totals="totals" :paidBy="paidBy" :total="totalPrice" />
             </div>
         </div>
     </div>
@@ -53,8 +53,10 @@ const members = ref(JSON.parse(route.query.members));
 const items = ref([]);
 const totals = reactive(new Map());
 const storeName = ref("");
+const totalPrice = ref(0);
 
 let totalSpent = 0;
+let residual = 0;
 
 for (let i = 0; i < members.value.length; i++) {
     totals.set(members.value[i].name, 0.0);
@@ -66,23 +68,39 @@ const populateItems = () => {
         .then((response) => {
             const boughtItems = response.data[0].items;
             storeName.value = response.data[0].store;
+            totalPrice.value = response.data[0].total;
+
+            console.log(response.data[0]);
 
             boughtItems.forEach((item) => {
-                const temp = {
-                    name: item.valueObject.Description.valueString,
-                    price: item.valueObject.TotalPrice.valueNumber,
-                };
-                items.value.push(temp);
+                if (item.valueObject.Description === undefined || item.valueObject.TotalPrice === undefined) {
+                    console.log(item);
+                } else {
+                    const temp = {
+                        name: item.valueObject.Description.valueString,
+                        price: item.valueObject.TotalPrice.valueNumber,
+                    };
+
+                    if (temp.price > 0) {
+                        items.value.push(temp);
+                    }
+                }
             });
+
+            // console.log("reaches");
 
             items.value.forEach((item) => {
                 totalSpent += item.price;
             });
 
+            if (totalSpent < totalPrice.value) {
+                residual = totalPrice.value - totalSpent;
+            }
+
             for (let i = 0; i < members.value.length; i++) {
                 totals.set(
                     members.value[i].name,
-                    totalSpent / members.value.length
+                    totalSpent / members.value.length + residual / members.value.length
                 );
             }
         })
@@ -110,7 +128,7 @@ const saveTransaction = async () => {
             data: {
                 groupID: groupID,
                 storeName: storeName.value,
-                amount: totalSpent,
+                amount: totalPrice.value,
                 paidBy: paidBy,
                 balances: balances
             },

@@ -113,10 +113,15 @@ const dbManager = {
 
     async createTransation(groupId, name, amount, paidBy) { // need to edit transaction table to include a name
         try {
+            const currentDate = new Date();
+            const dateString = currentDate.toISOString();
+
+            console.log(dateString);
+
             const query = `
-                INSERT INTO Transactions (groupID, paidBy, amount, name) VALUES ($1, $2, $3, $4) RETURNING *;
+                INSERT INTO Transactions (groupID, date, paidBy, amount, name) VALUES ($1, $2, $3, $4, $5) RETURNING *;
             `;
-            const values = [groupId, paidBy, amount, name];
+            const values = [groupId, dateString, paidBy, amount, name];
 
             const result = await pool.query(query, values);
             return result.rows[0];
@@ -128,7 +133,7 @@ const dbManager = {
     async getTransactions(groupId) {
         try {
             const query = `
-                SELECT U.username AS paidByName, T.amount, T.name AS storeName
+                SELECT U.username AS paidByName, T.amount, T.name AS storeName, T.date AS transactionDate
                 FROM Transactions T
                 JOIN Users U ON T.paidBy = U.UserID
                 WHERE T.groupID = $1;
